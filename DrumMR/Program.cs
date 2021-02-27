@@ -3,6 +3,7 @@ using System;
 using Microsoft.MixedReality.QR;
 using System.Threading;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace DrumMR
 {
@@ -12,15 +13,18 @@ namespace DrumMR
         static void Main(string[] args)
         {
             Debug.WriteLine("sleep");
+            var QRCodeWatcherAccess = GetAccessStatus().GetAwaiter().GetResult();
+            if (QRCodeWatcherAccess != QRCodeWatcherAccessStatus.Allowed)
+            {
+                Debug.WriteLine("ERROR: PERMISSION TO READ QR CODES NOT GRANTED");
+                return;
+            }
+
             //Initialize drumLocations to a "default pose".  We will check if these have changed to determine if that drum has been located.
             InitializeDrumLocations();
 
             //Directly modifies drumLocations[i] with the location of the i'th drum.
-            if (SetQRPoses() == false)
-            {
-                Console.WriteLine("Error starting QR code reading");
-                return;
-            }
+            SetQRPoses();
             WaitFromDrumInitialization();
 
             // Initialize StereoKit
@@ -74,17 +78,17 @@ namespace DrumMR
             SK.Shutdown();
         }
 
+        private static async Task<QRCodeWatcherAccessStatus> GetAccessStatus()
+        {
+            return await QRCodeWatcher.RequestAccessAsync();
+        }
+
         //Sets an event handler to fill drumLocations[i] with the found location of the QR code with the text i.  Returns whether the initialization was successful.
-        private static bool SetQRPoses()
+        private static void SetQRPoses()
         {
             QRCodeWatcher watcher;
             DateTime watcherStart;
-            var status = QRCodeWatcher.RequestAccessAsync().Result;
-            if (status != QRCodeWatcherAccessStatus.Allowed)
-            {
-                Debug.WriteLine("ERROR: PERMISSION TO READ QR CODES NOT GRANTED");
-                return false;
-            }
+
             watcherStart = DateTime.Now;
             watcher = new QRCodeWatcher();
             watcher.Added += (o, qr) => {
@@ -97,8 +101,6 @@ namespace DrumMR
                 }
             };
             watcher.Start();
-            Debug.WriteLine("init sucess");
-            return true;
         }
 
         //Returns whether parameter p is the "default pose" or a meaningful one
