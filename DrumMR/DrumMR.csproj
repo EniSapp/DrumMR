@@ -98,6 +98,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.MixedReality.QR">
+      <Version>0.5.2112</Version>
+    </PackageReference>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform" Version="6.2.9" />
     <PackageReference Include="StereoKit" Version="0.3.*" />
   </ItemGroup>
