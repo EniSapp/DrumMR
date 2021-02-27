@@ -4,9 +4,16 @@ using Microsoft.MixedReality.QR;
 using System.Threading;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
 
 namespace DrumMR
 {
+    struct Note
+    {
+        public double time;
+        public int pad;
+    }
     class Program
     {
         static Pose[] drumLocations = new Pose[3];
@@ -142,6 +149,25 @@ namespace DrumMR
                 Thread.Sleep(500);
                 Debug.WriteLine("sleep");
             } while (!allDrumsFound);
+        }
+        private static string getJSONStringOfSong(string songName)
+        {
+            return System.IO.File.ReadAllText(songName);
+        }
+
+        private static Note[] parseJSONSong(string json)
+        {
+            JArray array = JArray.Parse(json);
+            Note[] toReturn = new Note[array.Count];
+            int index = 0;
+            foreach (JObject jobject in array) {
+                Note newNote = new Note();
+                newNote.time = jobject.GetValue("time").ToObject<double>();
+                newNote.pad = jobject.GetValue("drum").ToObject<int>();
+                toReturn[index] = newNote;
+                index++;
+            }
+            return toReturn;
         }
     }
 }
