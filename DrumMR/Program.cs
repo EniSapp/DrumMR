@@ -17,7 +17,11 @@ namespace DrumMR
             }
 
             //Directly modifies drumLocations[i] with the location of the i'th drum.
-            SetQRPoses();
+            if (SetQRPoses() == false)
+            {
+                Console.WriteLine("Error starting QR code reading");
+                return;
+            }
             bool allDrumsFound;
 
             //Once this loop is complete all of the drums have been located and we are ready to start the program.
@@ -51,7 +55,7 @@ namespace DrumMR
             SK.Shutdown();
         }
 
-        private static void SetQRPoses()
+        private static bool SetQRPoses()
         {
             QRCodeWatcher watcher;
             DateTime watcherStart;
@@ -59,6 +63,7 @@ namespace DrumMR
             if (status != QRCodeWatcherAccessStatus.Allowed)
             {
                 Console.WriteLine("ERROR: PERMISSION TO READ QR CODES NOT GRANTED");
+                return false;
             }
             watcherStart = DateTime.Now;
             watcher = new QRCodeWatcher();
@@ -72,6 +77,7 @@ namespace DrumMR
                 }
             };
             watcher.Start();
+            return true;
         }
 
         private static bool PoseIsInitialized(Pose p)
