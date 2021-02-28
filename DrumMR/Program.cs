@@ -22,7 +22,6 @@ namespace DrumMR
         static string[] songs = { "Istanbul", "particle", "tmbg", "wheel", "whistling" };
         const double timeLengthOfGameBoard = 1.5;
         static bool[] buffer = new bool[4];
-        //TODO: CHANGE ME INTO THE ACTUAL LIST OF SONGS
 
         static void Main(string[] args)
         {
@@ -40,19 +39,19 @@ namespace DrumMR
             };
             if (!SK.Initialize(settings))
                 Environment.Exit(1);
-
+            /*
             var QRCodeWatcherAccess = GetAccessStatus().Result;
             if (QRCodeWatcherAccess != QRCodeWatcherAccessStatus.Allowed)
             {
                 Debug.WriteLine("ERROR: PERMISSION TO READ QR CODES NOT GRANTED");
                 return;
             }
-
+            */
             //Initialize drumLocations to a "default pose".  We will check if these have changed to determine if that drum has been located.
             InitializeDrumLocations();
             //Directly modifies drumLocations[i] with the location of the i'th drum.
-            var watcher = SetQRPoses();
-            WaitFromDrumInitialization();
+            //var watcher = SetQRPoses();
+            //WaitFromDrumInitialization();
 
 
             SerialPort port = new SerialPort("COM1", 9600, Parity.None, 8, StopBits.One);
@@ -62,11 +61,22 @@ namespace DrumMR
                 buffer[Int32.Parse(sp.ReadExisting())] = true;
             };
 
+
+
+
+            Vec3[] unitVectors = createNewUnitVectors(); //x, y, and z
             Mesh boardMesh = Mesh.GenerateCube(new Vec3(.30f, .20f, .1f));
             Mesh noteMesh = Mesh.GenerateCube(new Vec3(.04f, .048f, .1f));
             Model boardModel = Model.FromMesh(boardMesh, Default.Material);
-            Vec3 boardLocation = new Vec3(drumLocations[1].orientation.x + .05f, drumLocations[1].orientation.y + .05f, drumLocations[1].orientation.z + .05f);
-            Pose boardPose = new Pose(boardLocation, Quat.LookAt(boardLocation, Input.Head.position));
+            Debug.WriteLine(unitVectors[0]);
+
+
+
+            Quat boardQuat = new Quat(1, 1, 1, 1);
+
+            Vec3 boardLocation = new Vec3(drumLocations[1].orientation.x + .05f*(unitVectors[0].x+unitVectors[1].x+unitVectors[2].x), drumLocations[1].orientation.y + .05f*((unitVectors[0].y + unitVectors[1].y + unitVectors[2].y)), drumLocations[1].orientation.z + (((unitVectors[0].z + unitVectors[1].z + unitVectors[2].z))));
+            Pose boardPose = new Pose(boardLocation, boardQuat);
+            //TODO: SET THIS QUAT TO BE PARALLEL TO UNITVECTORS[0]
             //TODO: MAKE DIFFERENTLY COLORED NOTE MESHES FOR EACH LANE
             //TODO: ROTATION IS GOING TO NEED TO BE FIGURED OUT.  IT CAN'T TURN DYNAMICALLY BECAUSE THE NOTES WOULD NEED TO TURN AS WELL
 
@@ -113,13 +123,37 @@ namespace DrumMR
                 }
                 else
                 {
+                    float midpoint = (drumLocations[0].position.x + drumLocations[3].position.x)/2;
+                    float notePoint = midpoint / 4;
                     while (positionInNotes < notes.Length && notes[positionInNotes].time-(songStartTime-Time.Total) > timeLengthOfGameBoard)
                     {
                         Note noteToPush = notes[positionInNotes];
                         noteQueues[noteToPush.pad].Enqueue(noteToPush);
                         positionInNotes++;
                     }
-                    //boardModel.Draw()
+                    boardModel.Draw(boardPose.ToMatrix(), Color.Black);
+                    for (int i = 0; i < noteQueues.Length; i++)
+                    {
+                        for (int j = 0; j < noteQueues[i].Length; j++)
+                        {
+                            Note noteToRender = noteQueues[i].Dequeue();
+                            Pose notePose = new Pose(notePoint * i, (float)(noteToRender.time - Time.Total) *(float)( .30/1.5) , boardLocation.z+ (float).1,boardQuat);
+                            //TODO: RENDER THE NOTE HERE
+                            //unitVectors[3] contains vectors representing 
+
+
+
+
+
+                            if (j == 0 && buffer[i])
+                            {
+                                buffer[i] = false;
+                            } else
+                            {
+                                noteQueues[i].Enqueue(noteToRender);
+                            }
+                        }
+                    }
 
 
 
@@ -136,6 +170,7 @@ namespace DrumMR
         //Sets an event handler to fill drumLocations[i] with the found location of the QR code with the text i.  Returns whether the initialization was successful.
         private static QRCodeWatcher SetQRPoses()
         {
+            
             QRCodeWatcher watcher;
             DateTime watcherStart;
             Debug.WriteLine("QR");
