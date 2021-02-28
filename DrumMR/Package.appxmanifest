@@ -50,5 +50,6 @@
   </Applications>
 
   <Capabilities>
-    <DeviceCapability Name="webcam"/></Capabilities>
+    <DeviceCapability Name="webcam"/>
+    <DeviceCapability Name="bluetooth"/></Capabilities>
 </Package>
