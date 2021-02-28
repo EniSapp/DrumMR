@@ -50,9 +50,8 @@ namespace DrumMR
             //Initialize drumLocations to a "default pose".  We will check if these have changed to determine if that drum has been located.
             InitializeDrumLocations();
             //Directly modifies drumLocations[i] with the location of the i'th drum.
-
-            SetQRPoses();
-            //WaitFromDrumInitialization();
+            var watcher = SetQRPoses();
+            WaitFromDrumInitialization();
 
 
             SerialPort port = new SerialPort("COM1", 9600, Parity.None, 8, StopBits.One);
@@ -61,6 +60,14 @@ namespace DrumMR
                 SerialPort sp = (SerialPort)sender;
                 buffer[Int32.Parse(sp.ReadExisting())] = true;
             };
+
+            Mesh boardMesh = Mesh.GenerateCube(new Vec3(.30f, .20f, .1f));
+            Mesh noteMesh = Mesh.GenerateCube(new Vec3(.04f, .048f, .1f));
+            Model boardModel = Model.FromMesh(boardMesh, Default.Material);
+            Vec3 boardLocation = new Vec3(drumLocations[1].orientation.x + .05f, drumLocations[1].orientation.y + .05f, drumLocations[1].orientation.z + .05f);
+            Pose boardPose = new Pose(boardLocation, Quat.LookAt(boardLocation, Input.Head.position));
+            //TODO: MAKE DIFFERENTLY COLORED NOTE MESHES FOR EACH LANE
+            //TODO: ROTATION IS GOING TO NEED TO BE FIGURED OUT.  IT CAN'T TURN DYNAMICALLY BECAUSE THE NOTES WOULD NEED TO TURN AS WELL
 
             // Core application loop
             while (SK.Step(() =>
@@ -101,6 +108,10 @@ namespace DrumMR
                         noteQueues[noteToPush.pad].Enqueue(noteToPush);
                         positionInNotes++;
                     }
+                    //boardModel.Draw()
+
+
+
                 }
             })) ;
             SK.Shutdown();
@@ -112,7 +123,7 @@ namespace DrumMR
         }
 
         //Sets an event handler to fill drumLocations[i] with the found location of the QR code with the text i.  Returns whether the initialization was successful.
-        private static void SetQRPoses()
+        private static QRCodeWatcher SetQRPoses()
         {
             QRCodeWatcher watcher;
             DateTime watcherStart;
@@ -131,6 +142,7 @@ namespace DrumMR
                 }
             };
             watcher.Start();
+            return watcher;
         }
 
         //Returns whether parameter p is the "default pose" or a meaningful one
@@ -199,5 +211,21 @@ namespace DrumMR
             Array.Sort<Note>(ar, (x, y) => x.time.CompareTo(y.time));
             return ar;
         }
+
+        private static Vec3[] createNewUnitVectors()
+        {
+            Vec3 dOneLocation = drumLocations[1].position;
+            Vec3 dTwoLocation = drumLocations[2].position;
+            Vec3 xUnit = new Vec3((dTwoLocation.x - dOneLocation.x)*1/.22f, (dTwoLocation.y - dOneLocation.y) * 1 / .22f, (dTwoLocation.z - dOneLocation.z) * 1 / .22f);
+            Vec3 yUnit = new Vec3(-xUnit.y, xUnit.x, xUnit.z);
+            Vec3 zUnit = new Vec3(-xUnit.z, xUnit.y, xUnit.x);
+            return new Vec3[] { xUnit, yUnit, zUnit };
+        }
     }
+
+
+
+
+
+
 }
