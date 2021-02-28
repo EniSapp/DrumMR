@@ -20,19 +20,6 @@ namespace DrumMR
         static void Main(string[] args)
         {
             Debug.WriteLine("sleep");
-            var QRCodeWatcherAccess = GetAccessStatus().GetAwaiter().GetResult();
-            if (QRCodeWatcherAccess != QRCodeWatcherAccessStatus.Allowed)
-            {
-                Debug.WriteLine("ERROR: PERMISSION TO READ QR CODES NOT GRANTED");
-                return;
-            }
-
-            //Initialize drumLocations to a "default pose".  We will check if these have changed to determine if that drum has been located.
-            InitializeDrumLocations();
-
-            //Directly modifies drumLocations[i] with the location of the i'th drum.
-            SetQRPoses();
-            WaitFromDrumInitialization();
 
             // Initialize StereoKit
             SKSettings settings = new SKSettings
@@ -60,6 +47,20 @@ namespace DrumMR
             Matrix floorTransform = Matrix.TS(new Vec3(0, -1.5f, 0), new Vec3(30, 0.1f, 30));
             Material floorMaterial = new Material(Shader.FromFile("floor.hlsl"));
             floorMaterial.Transparency = Transparency.Blend;
+
+            var QRCodeWatcherAccess = GetAccessStatus().Result;
+            if (QRCodeWatcherAccess != QRCodeWatcherAccessStatus.Allowed)
+            {
+                Debug.WriteLine("ERROR: PERMISSION TO READ QR CODES NOT GRANTED");
+                return;
+            }
+
+            //Initialize drumLocations to a "default pose".  We will check if these have changed to determine if that drum has been located.
+            InitializeDrumLocations();
+
+            //Directly modifies drumLocations[i] with the location of the i'th drum.
+            SetQRPoses();
+            WaitFromDrumInitialization();
 
             //Sprite grid = Sprite.FromFile("grid.png", SpriteType.Single);
             //Matrix gridMatrix = Pose.ToMatrix(drumLocations[0].position);
