@@ -19,7 +19,7 @@ namespace DrumMR
     {
         static Pose[] drumLocations = new Pose[4];
         static Note[] notes;
-        static string[] songs = { "Istanbul", "particle", "tmbg", "wheel", "whistling" };
+        static string[] songs = { "istanbul", "particle", "tmbg", "wheel", "whistling" };
         const double timeLengthOfGameBoard = 1.5;
         static bool[] buffer = new bool[4];
 
@@ -79,16 +79,16 @@ namespace DrumMR
             {
                 if (!PoseIsInitialized(drumLocations[0]))
                 {
-                    //getDrumLocation(0);
+                    getDrumLocation(0);
                 } else if (!PoseIsInitialized(drumLocations[1]))
                 {
-                    //getDrumLocation(1);
+                    getDrumLocation(1);
                 } else if (!PoseIsInitialized(drumLocations[2]))
                 {
-                    //getDrumLocation(2);
+                    getDrumLocation(2);
                 } else if (!PoseIsInitialized(drumLocations[3]))
                 {
-                   // getDrumLocation(3);
+                   getDrumLocation(3);
                 }
                 else if (notes is null)
                 {
@@ -99,28 +99,34 @@ namespace DrumMR
                     {
                         if (UI.Button(songs[i]))
                         {
+                            Debug.WriteLine(songs[i]);
                             string jsonString = getJSONStringOfSong(songs[i] + ".json");
                             notes = parseJSONSong(jsonString);
                             notes = sortNotes(notes);
-                            //song = Sound.FromFile(songs[i] + ".wav");
-                            //song.Play(Input.Head.position);
+                            song = Sound.FromFile(songs[i] + ".wav");
+                            song.Play(Input.Head.position);
                             songStartTime = Time.Total;
-                            noteQueues = new Queue<Note>[3];
+                            noteQueues = new Queue<Note>[4];
                         }
                     }
                     UI.WindowEnd();
                 }
                 else
                 {
+                    //calculates x values for note lanes
                     float midpoint = (drumLocations[0].position.x + drumLocations[3].position.x)/2;
                     float notePoint = midpoint / 4;
+
+                    //draws the board
+                    boardModel.Draw(boardPose.ToMatrix(), Color.Black);
+
                     while (positionInNotes < notes.Length && notes[positionInNotes].time-(songStartTime-Time.Total) > timeLengthOfGameBoard)
                     {
                         Note noteToPush = notes[positionInNotes];
                         noteQueues[noteToPush.pad].Enqueue(noteToPush);
                         positionInNotes++;
                     }
-                    boardModel.Draw(boardPose.ToMatrix(), Color.Black);
+                   
                     for (int i = 0; i < noteQueues.Length; i++)
                     {
                         for (int j = 0; j < noteQueues[i].Count; j++)
@@ -176,7 +182,7 @@ namespace DrumMR
 
         private static string getJSONStringOfSong(string songName)
         {
-            return System.IO.File.ReadAllText(songName);
+            return System.IO.File.ReadAllText("assets\\" +songName);
         }
 
         private static Note[] parseJSONSong(string json)
