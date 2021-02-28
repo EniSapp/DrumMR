@@ -80,7 +80,9 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <SKShader Include="Assets\floor.hlsl" />
+    <Content Include="Assets\grd.png" />
+    <Content Include="Assets\grid.png" />
+    <Content Include="Assets\istanbul.ogg" />
     <Content Include="Assets\Logo\Logo-150.png" />
     <Content Include="Assets\Logo\Logo-16.png" />
     <Content Include="Assets\Logo\Logo-310.png" />
@@ -89,6 +91,10 @@
     <Content Include="Assets\Logo\Logo-71.png" />
     <Content Include="Assets\Logo\Logo-Wide150.png" />
     <Content Include="Assets\Logo\Logo-Wide300.png" />
+    <Content Include="Assets\particle.ogg" />
+    <Content Include="Assets\tmbg.ogg" />
+    <Content Include="Assets\wheel.ogg" />
+    <Content Include="Assets\whistling.ogg" />
     <Content Include="Properties\Default.rd.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -106,6 +112,14 @@
       <Version>12.0.3</Version>
     </PackageReference>
     <PackageReference Include="StereoKit" Version="0.3.*" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\istanbul.jsom" />
+    <None Include="Assets\particle.jsom" />
+    <None Include="Assets\songname.json" />
+    <None Include="Assets\tmbg.jsom" />
+    <None Include="Assets\wheel.jsom" />
+    <None Include="Assets\whistling.jsom" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '16.0' ">
     <VisualStudioVersion>16.0</VisualStudioVersion>

@@ -49,10 +49,11 @@ namespace DrumMR
 
             //Initialize drumLocations to a "default pose".  We will check if these have changed to determine if that drum has been located.
             InitializeDrumLocations();
-
             //Directly modifies drumLocations[i] with the location of the i'th drum.
+
             SetQRPoses();
-            WaitFromDrumInitialization();
+            //WaitFromDrumInitialization();
+
 
             SerialPort port = new SerialPort("COM1", 9600, Parity.None, 8, StopBits.One);
             port.DataReceived += (sender, dataArgs) =>
@@ -61,18 +62,17 @@ namespace DrumMR
                 buffer[Int32.Parse(sp.ReadExisting())] = true;
             };
 
-            Matrix gridmat = drumLocations[0].ToMatrix();
-            Sprite grid = Sprite.FromFile("grd.png");
-            grid.Draw(gridmat,Color32.Black);
             // Core application loop
             while (SK.Step(() =>
             {
+                
                 //test code
                 Pose gridPose = new Pose(-.4f, 0, 0, Quat.LookDir(1, 0, 1));
                 Matrix gridmat = gridPose.ToMatrix();
                 //Matrix gridmat = drumLocations[2].ToMatrix();
                 Sprite grid = Sprite.FromFile("grd.png", SpriteType.Single);
                 grid.Draw(gridmat,Color32.BlackTransparent);
+
                 if (notes is null)
                 {
                     //TODO: CHANGE THIS TO MOVE WITH THE USER USING INPUT.HEAD.POSITION?
@@ -116,10 +116,12 @@ namespace DrumMR
         {
             QRCodeWatcher watcher;
             DateTime watcherStart;
-
+            Debug.WriteLine("QR");
             watcherStart = DateTime.Now;
             watcher = new QRCodeWatcher();
+            Debug.WriteLine("QR");
             watcher.Added += (o, qr) => {
+                Debug.WriteLine("QR read");
                 // QRCodeWatcher will provide QR codes from before session start,
                 // so we often want to filter those out.
                 if (qr.Code.LastDetectedTime > watcherStart)
@@ -164,7 +166,8 @@ namespace DrumMR
                 {
                     if (!PoseIsInitialized(drumLocations[i]))
                     {
-                       allDrumsFound = false;
+                        SetQRPoses();
+                        allDrumsFound = false;
                     }
                 }
                 Thread.Sleep(500);
