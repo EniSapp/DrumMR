@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using System.IO.Ports;
 
 namespace DrumMR
 {
@@ -20,6 +21,7 @@ namespace DrumMR
         static Note[] notes;
         static string[] songs = { "songname", "SongTwo", "SongThree" };
         const double timeLengthOfGameBoard = 1.5;
+        static bool[] buffer = new bool[4];
         //TODO: CHANGE ME INTO THE ACTUAL LIST OF SONGS
 
         static void Main(string[] args)
@@ -51,8 +53,17 @@ namespace DrumMR
             //Directly modifies drumLocations[i] with the location of the i'th drum.
             SetQRPoses();
             WaitFromDrumInitialization();
-            
 
+            SerialPort port = new SerialPort("COM1", 9600, Parity.None, 8, StopBits.One);
+            port.DataReceived += (sender, dataArgs) =>
+            {
+                SerialPort sp = (SerialPort)sender;
+                buffer[Int32.Parse(sp.ReadExisting())] = true;
+            };
+
+            Matrix gridmat = drumLocations[0].ToMatrix();
+            Sprite grid = Sprite.FromFile("grd.png");
+            grid.Draw(gridmat,Color32.Black);
             // Core application loop
             while (SK.Step(() =>
             {
@@ -84,7 +95,7 @@ namespace DrumMR
                 }
                 else
                 {
-                    while (notes[positionInNotes].time-(songStartTime-Time.Total) > timeLengthOfGameBoard)
+                    while (positionInNotes < notes.Length && notes[positionInNotes].time-(songStartTime-Time.Total) > timeLengthOfGameBoard)
                     {
                         Note noteToPush = notes[positionInNotes];
                         noteQueues[noteToPush.pad].Enqueue(noteToPush);
