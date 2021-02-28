@@ -39,14 +39,14 @@ namespace DrumMR
             };
             if (!SK.Initialize(settings))
                 Environment.Exit(1);
-            /*
-            var QRCodeWatcherAccess = GetAccessStatus().Result;
+            
+           /* var QRCodeWatcherAccess = GetAccessStatus().Result;
             if (QRCodeWatcherAccess != QRCodeWatcherAccessStatus.Allowed)
             {
                 Debug.WriteLine("ERROR: PERMISSION TO READ QR CODES NOT GRANTED");
                 return;
-            }
-            */
+            }*/
+            
             //Initialize drumLocations to a "default pose".  We will check if these have changed to determine if that drum has been located.
             InitializeDrumLocations();
             //Directly modifies drumLocations[i] with the location of the i'th drum.
@@ -76,6 +76,7 @@ namespace DrumMR
 
             Vec3 boardLocation = new Vec3(drumLocations[1].orientation.x + .05f*(unitVectors[0].x+unitVectors[1].x+unitVectors[2].x), drumLocations[1].orientation.y + .05f*((unitVectors[0].y + unitVectors[1].y + unitVectors[2].y)), drumLocations[1].orientation.z + (((unitVectors[0].z + unitVectors[1].z + unitVectors[2].z))));
             Pose boardPose = new Pose(boardLocation, boardQuat);
+            boardModel.Draw(boardPose.ToMatrix(), Color.Black);
             //TODO: SET THIS QUAT TO BE PARALLEL TO UNITVECTORS[0]
             //TODO: MAKE DIFFERENTLY COLORED NOTE MESHES FOR EACH LANE
             //TODO: ROTATION IS GOING TO NEED TO BE FIGURED OUT.  IT CAN'T TURN DYNAMICALLY BECAUSE THE NOTES WOULD NEED TO TURN AS WELL
@@ -83,7 +84,7 @@ namespace DrumMR
             // Core application loop
             while (SK.Step(() =>
             {
-                watcher.Added += (o, qr) => {
+                /*watcher.Added += (o, qr) => {
                     Debug.WriteLine("QR read");
                     // QRCodeWatcher will provide QR codes from before session start,
                     // so we often want to filter those out.
@@ -93,13 +94,7 @@ namespace DrumMR
                         drumLocations[Int32.Parse(qr.Code.Data)] = World.FromSpatialNode(qr.Code.SpatialGraphNodeId);
                         Debug.WriteLine("QR Code number " + qr.Code.Data + " has been located.  Move to the next code");
                     }
-                };
-                //test code
-                Pose gridPose = new Pose(-.4f, 0, 0, Quat.LookDir(1, 0, 1));
-                Matrix gridmat = gridPose.ToMatrix();
-                //Matrix gridmat = drumLocations[2].ToMatrix();
-                Sprite grid = Sprite.FromFile("grd.png", SpriteType.Single);
-                grid.Draw(gridmat,Color32.BlackTransparent);
+                };*/
 
                 if (notes is null)
                 {
@@ -134,7 +129,7 @@ namespace DrumMR
                     boardModel.Draw(boardPose.ToMatrix(), Color.Black);
                     for (int i = 0; i < noteQueues.Length; i++)
                     {
-                        for (int j = 0; j < noteQueues[i].Length; j++)
+                        for (int j = 0; j < noteQueues[i].Count; j++)
                         {
                             Note noteToRender = noteQueues[i].Dequeue();
                             Pose notePose = new Pose(notePoint * i, (float)(noteToRender.time - Time.Total) *(float)( .30/1.5) , boardLocation.z+ (float).1,boardQuat);
