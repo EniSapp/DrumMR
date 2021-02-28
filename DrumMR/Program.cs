@@ -19,10 +19,15 @@ namespace DrumMR
         static Pose[] drumLocations = new Pose[3];
         static Note[] notes;
         static string[] songs = { "SoneOne", "SongTwo", "SongThree" };
+        const double timeLengthOfGameBoard = 1.5;
         //TODO: CHANGE ME INTO THE ACTUAL LIST OF SONGS
 
         static void Main(string[] args)
         {
+            Sound song;
+            Queue<Note>[] noteQueues = null;
+            int positionInNotes = 0;
+            double songStartTime = 0;
 
             // Initialize StereoKit
             SKSettings settings = new SKSettings
@@ -52,22 +57,31 @@ namespace DrumMR
             {
                 if (notes is null)
                 {
+                    //TODO: CHANGE THIS TO MOVE WITH THE USER USING INPUT.HEAD.POSITION?
                     Pose windowPose = new Pose(-.4f, 0, 0, Quat.LookDir(1, 0, 1));
                     UI.WindowBegin("Window", ref windowPose, new Vec2(20, 0) * U.cm, UIWin.Normal);
                     for (int i = 0; i < songs.Length; i++)
                     {
                         if (UI.Button(songs[i]))
                         {
-                            string jsonString = getJSONStringOfSong(songs[i]);
+                            string jsonString = getJSONStringOfSong(songs[i] + ".json");
                             notes = parseJSONSong(jsonString);
                             notes = sortNotes(notes);
-                            //On the next frame notes will no longer be null and the "else" clause will be entered
+                            song = Sound.FromFile(songs[i] + ".wav");
+                            song.Play(Input.Head.position);
+                            songStartTime = Time.Total;
+                            noteQueues = new Queue<Note>[3];
                         }
                     }
                 }
                 else
                 {
-                    //Play the game!
+                    while (notes[positionInNotes].time-(songStartTime-Time.Total) > timeLengthOfGameBoard)
+                    {
+                        Note noteToPush = notes[positionInNotes];
+                        noteQueues[noteToPush.pad].Enqueue(noteToPush);
+                        positionInNotes++;
+                    }
                 }
             })) ;
             SK.Shutdown();
