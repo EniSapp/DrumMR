@@ -97,8 +97,8 @@ namespace DrumMR
                             string jsonString = getJSONStringOfSong(songs[i] + ".json");
                             notes = parseJSONSong(jsonString);
                             notes = sortNotes(notes);
-                            song = Sound.FromFile(songs[i] + ".wav");
-                            song.Play(Input.Head.position);
+                            //song = Sound.FromFile(songs[i] + ".wav");
+                            //song.Play(Input.Head.position);
                             songStartTime = Time.Total;
                             noteQueues = new Queue<Note>[3];
                         }
