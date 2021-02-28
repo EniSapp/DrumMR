@@ -30,6 +30,7 @@ namespace DrumMR
             Queue<Note>[] noteQueues = null;
             int positionInNotes = 0;
             double songStartTime = 0;
+            DateTime watcherStart = DateTime.Now;
 
             // Initialize StereoKit
             SKSettings settings = new SKSettings
@@ -72,7 +73,17 @@ namespace DrumMR
             // Core application loop
             while (SK.Step(() =>
             {
-                
+                watcher.Added += (o, qr) => {
+                    Debug.WriteLine("QR read");
+                    // QRCodeWatcher will provide QR codes from before session start,
+                    // so we often want to filter those out.
+                    if (qr.Code.LastDetectedTime > watcherStart)
+                    {
+                        Debug.WriteLine(qr.Code.Data);
+                        drumLocations[Int32.Parse(qr.Code.Data)] = World.FromSpatialNode(qr.Code.SpatialGraphNodeId);
+                        Debug.WriteLine("QR Code number " + qr.Code.Data + " has been located.  Move to the next code");
+                    }
+                };
                 //test code
                 Pose gridPose = new Pose(-.4f, 0, 0, Quat.LookDir(1, 0, 1));
                 Matrix gridmat = gridPose.ToMatrix();
@@ -178,7 +189,6 @@ namespace DrumMR
                 {
                     if (!PoseIsInitialized(drumLocations[i]))
                     {
-                        SetQRPoses();
                         allDrumsFound = false;
                     }
                 }
