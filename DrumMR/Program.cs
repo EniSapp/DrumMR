@@ -137,7 +137,7 @@ namespace DrumMR
                         for (int j = 0; j < noteQueues[i].Count; j++)
                         {
                             Note noteToRender = noteQueues[i].Dequeue();
-                            Pose notePose = new Pose(notePoint * i, (float)(noteToRender.time - Time.Total) *(float)( .20/1.5) , boardLocation.z+ (float).1,boardQuat);
+                            Pose notePose = new Pose(notePoint * i, (float)(noteToRender.time - songStartTime) *(float)( .20/1.5) , boardLocation.z+ (float).1,boardQuat);
                             Debug.WriteLine("note " + i);
                             noteModel.Draw(notePose.ToMatrix(), Color.White);
                             //TODO: RENDER THE NOTE HERE
@@ -149,6 +149,7 @@ namespace DrumMR
 
                             if (j == 0 && buffer[i])
                             {
+                                //TODO: ONLY DO THIS IF THE NOTE IS CLOSE TO THE BOTTOM
                                 buffer[i] = false;
                             } else
                             {
