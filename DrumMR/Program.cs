@@ -46,11 +46,10 @@ namespace DrumMR
             port.DataReceived += (sender, dataArgs) =>
             {
                 SerialPort sp = (SerialPort)sender;
-                buffer[Int32.Parse(sp.ReadExisting())] = true;
+                string result = sp.ReadExisting();
+                Debug.WriteLine("Serial data received: " + result);
+                buffer[Int32.Parse(result)] = true;
             };
-
-
-
 
             Vec3[] unitVectors = createNewUnitVectors(); //x, y, and z
             Mesh boardMesh = Mesh.GenerateCube(new Vec3(.30f, .20f, .1f));
