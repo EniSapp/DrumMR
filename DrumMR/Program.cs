@@ -63,11 +63,11 @@ namespace DrumMR
 
 
 
-            Quat boardQuat = new Quat(1, 1, 1, 1);
+            Quat boardQuat = new Quat(1, 0, 0, 0);
 
             Vec3 boardLocation = new Vec3(drumLocations[1].orientation.x + .05f*(unitVectors[0].x+unitVectors[1].x+unitVectors[2].x), drumLocations[1].orientation.y + .05f*((unitVectors[0].y + unitVectors[1].y + unitVectors[2].y)), drumLocations[1].orientation.z + (((unitVectors[0].z + unitVectors[1].z + unitVectors[2].z))));
             Pose boardPose = new Pose(boardLocation, boardQuat);
-            boardModel.Draw(boardPose.ToMatrix(), Color.Black);
+            boardModel.Draw(boardPose.ToMatrix(), Color.BlackTransparent);
             //TODO: SET THIS QUAT TO BE PARALLEL TO UNITVECTORS[0]
             //TODO: MAKE DIFFERENTLY COLORED NOTE MESHES FOR EACH LANE
             //TODO: ROTATION IS GOING TO NEED TO BE FIGURED OUT.  IT CAN'T TURN DYNAMICALLY BECAUSE THE NOTES WOULD NEED TO TURN AS WELL
@@ -92,6 +92,14 @@ namespace DrumMR
                 }
                 else if (notes is null)
                 {
+                    string jsonString = getJSONStringOfSong("istanbul.json");
+                    notes = parseJSONSong(jsonString);
+                    notes = sortNotes(notes);
+                    song = Sound.FromFile("istanbul.wav");
+                    song.Play(Input.Head.position);
+                    songStartTime = Time.Total;
+                    noteQueues = new Queue<Note>[4];
+
                     //TODO: CHANGE THIS TO MOVE WITH THE USER USING INPUT.HEAD.POSITION?
                     Pose windowPose = new Pose(-.4f, 0, 0, Quat.LookDir(1, 0, 1));
                     UI.WindowBegin("Window", ref windowPose, new Vec2(20, 0) * U.cm, UIWin.Normal);
@@ -107,6 +115,10 @@ namespace DrumMR
                             song.Play(Input.Head.position);
                             songStartTime = Time.Total;
                             noteQueues = new Queue<Note>[4];
+                            for(int i = 0; i < 4; i++)
+                            {
+                                noteQueues[i] = new Queue<Note> { };
+                            }
                         }
                     }
                     UI.WindowEnd();
@@ -120,9 +132,11 @@ namespace DrumMR
                     //draws the board
                     boardModel.Draw(boardPose.ToMatrix(), Color.Black);
 
-                    while (positionInNotes < notes.Length && notes[positionInNotes].time-(songStartTime-Time.Total) > timeLengthOfGameBoard)
+                    while (positionInNotes < notes.Length && notes[positionInNotes].time-(songStartTime-Time.Total) < timeLengthOfGameBoard)
                     {
                         Note noteToPush = notes[positionInNotes];
+                        Debug.WriteLine(noteToPush.pad);
+                        Debug.WriteLine(noteQueues[noteToPush.pad].Count);
                         noteQueues[noteToPush.pad].Enqueue(noteToPush);
                         positionInNotes++;
                     }
@@ -132,8 +146,8 @@ namespace DrumMR
                         for (int j = 0; j < noteQueues[i].Count; j++)
                         {
                             Note noteToRender = noteQueues[i].Dequeue();
-                            Pose notePose = new Pose(notePoint * i, (float)(noteToRender.time - Time.Total) *(float)( .30/1.5) , boardLocation.z+ (float).1,boardQuat);
-                            noteModel.Draw(notePose.ToMatrix(), Color.Black);
+                            Pose notePose = new Pose(notePoint * i, (float)(noteToRender.time - Time.Total) *(float)( .20/1.5) , boardLocation.z+ (float).1,boardQuat);
+                            noteModel.Draw(notePose.ToMatrix(), Color.BlackTransparent);
                             //TODO: RENDER THE NOTE HERE
                             //unitVectors[3] contains vectors representing 
 
