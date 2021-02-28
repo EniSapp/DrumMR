@@ -22,7 +22,6 @@ namespace DrumMR
         static string[] songs = { "Istanbul", "particle", "tmbg", "wheel", "whistling" };
         const double timeLengthOfGameBoard = 1.5;
         static bool[] buffer = new bool[4];
-        //TODO: CHANGE ME INTO THE ACTUAL LIST OF SONGS
 
         static void Main(string[] args)
         {
@@ -60,7 +59,6 @@ namespace DrumMR
                 SerialPort sp = (SerialPort)sender;
                 buffer[Int32.Parse(sp.ReadExisting())] = true;
             };
-
             Mesh boardMesh = Mesh.GenerateCube(new Vec3(.30f, .20f, .1f));
             Mesh noteMesh = Mesh.GenerateCube(new Vec3(.04f, .048f, .1f));
             Model boardModel = Model.FromMesh(boardMesh, Default.Material);
