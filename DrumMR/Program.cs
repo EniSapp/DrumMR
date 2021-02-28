@@ -79,16 +79,16 @@ namespace DrumMR
             {
                 if (!PoseIsInitialized(drumLocations[0]))
                 {
-                    getDrumLocation(0);
+                    //getDrumLocation(0);
                 } else if (!PoseIsInitialized(drumLocations[1]))
                 {
-                    getDrumLocation(1);
+                    //getDrumLocation(1);
                 } else if (!PoseIsInitialized(drumLocations[2]))
                 {
-                    getDrumLocation(2);
+                    //getDrumLocation(2);
                 } else if (!PoseIsInitialized(drumLocations[3]))
                 {
-                    getDrumLocation(3);
+                   // getDrumLocation(3);
                 }
                 else if (notes is null)
                 {
