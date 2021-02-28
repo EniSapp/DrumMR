@@ -17,7 +17,7 @@ namespace DrumMR
     }
     class Program
     {
-        static Pose[] drumLocations = new Pose[3];
+        static Pose[] drumLocations = new Pose[4];
         static Note[] notes;
         static string[] songs = { "Istanbul", "particle", "tmbg", "wheel", "whistling" };
         const double timeLengthOfGameBoard = 1.5;
@@ -38,20 +38,8 @@ namespace DrumMR
             };
             if (!SK.Initialize(settings))
                 Environment.Exit(1);
-            /*
-            var QRCodeWatcherAccess = GetAccessStatus().Result;
-            if (QRCodeWatcherAccess != QRCodeWatcherAccessStatus.Allowed)
-            {
-                Debug.WriteLine("ERROR: PERMISSION TO READ QR CODES NOT GRANTED");
-                return;
-            }
-            */
-            //Initialize drumLocations to a "default pose".  We will check if these have changed to determine if that drum has been located.
-            InitializeDrumLocations();
-            //Directly modifies drumLocations[i] with the location of the i'th drum.
-            //var watcher = SetQRPoses();
-            //WaitFromDrumInitialization();
-
+            
+            
 
             SerialPort port = new SerialPort("COM1", 9600, Parity.None, 8, StopBits.One);
             port.DataReceived += (sender, dataArgs) =>
@@ -80,10 +68,24 @@ namespace DrumMR
             //TODO: ROTATION IS GOING TO NEED TO BE FIGURED OUT.  IT CAN'T TURN DYNAMICALLY BECAUSE THE NOTES WOULD NEED TO TURN AS WELL
 
             // Core application loop
+
+            InitializeDrumLocations();
             while (SK.Step(() =>
             {
-                
-                if (notes is null)
+                if (!PoseIsInitialized(drumLocations[0]))
+                {
+                    getDrumLocation(0);
+                } else if (!PoseIsInitialized(drumLocations[1]))
+                {
+                    getDrumLocation(1);
+                } else if (!PoseIsInitialized(drumLocations[2]))
+                {
+                    getDrumLocation(2);
+                } else if (!PoseIsInitialized(drumLocations[3]))
+                {
+                    getDrumLocation(3);
+                }
+                else if (notes is null)
                 {
                     //TODO: CHANGE THIS TO MOVE WITH THE USER USING INPUT.HEAD.POSITION?
                     Pose windowPose = new Pose(-.4f, 0, 0, Quat.LookDir(1, 0, 1));
@@ -116,7 +118,7 @@ namespace DrumMR
                     boardModel.Draw(boardPose.ToMatrix(), Color.Black);
                     for (int i = 0; i < noteQueues.Length; i++)
                     {
-                        for (int j = 0; j < noteQueues[i].Length; j++)
+                        for (int j = 0; j < noteQueues[i].Count; j++)
                         {
                             Note noteToRender = noteQueues[i].Dequeue();
                             Pose notePose = new Pose(notePoint * i, (float)(noteToRender.time - Time.Total) *(float)( .30/1.5) , boardLocation.z+ (float).1,boardQuat);
@@ -144,35 +146,6 @@ namespace DrumMR
             SK.Shutdown();
         }
 
-        private static async Task<QRCodeWatcherAccessStatus> GetAccessStatus()
-        {
-            return await QRCodeWatcher.RequestAccessAsync();
-        }
-
-        //Sets an event handler to fill drumLocations[i] with the found location of the QR code with the text i.  Returns whether the initialization was successful.
-        private static QRCodeWatcher SetQRPoses()
-        {
-            
-            QRCodeWatcher watcher;
-            DateTime watcherStart;
-            Debug.WriteLine("QR");
-            watcherStart = DateTime.Now;
-            watcher = new QRCodeWatcher();
-            Debug.WriteLine("QR");
-            watcher.Added += (o, qr) => {
-                Debug.WriteLine("QR read");
-                // QRCodeWatcher will provide QR codes from before session start,
-                // so we often want to filter those out.
-                if (qr.Code.LastDetectedTime > watcherStart)
-                {
-                    drumLocations[Int32.Parse(qr.Code.Data)] = World.FromSpatialNode(qr.Code.SpatialGraphNodeId);
-                    Debug.WriteLine("QR Code number " + qr.Code.Data + " has been located.  Move to the next code");
-                }
-            };
-            watcher.Start();
-            return watcher;
-        }
-
         //Returns whether parameter p is the "default pose" or a meaningful one
         private static bool PoseIsInitialized(Pose p)
         {
@@ -195,24 +168,6 @@ namespace DrumMR
             }
         }
 
-        //Sleeps the current thread until all of drumLocations[] has been initialized.
-        private static void WaitFromDrumInitialization()
-        {
-            bool allDrumsFound;
-            do
-            {
-                allDrumsFound = true;
-                for (int i = 0; i < drumLocations.Length; i++)
-                {
-                    if (!PoseIsInitialized(drumLocations[i]))
-                    {
-                        allDrumsFound = false;
-                    }
-                }
-                Thread.Sleep(500);
-                Debug.WriteLine("sleep");
-            } while (!allDrumsFound);
-        }
         private static string getJSONStringOfSong(string songName)
         {
             return System.IO.File.ReadAllText(songName);
@@ -247,6 +202,16 @@ namespace DrumMR
             Vec3 yUnit = new Vec3(-xUnit.y, xUnit.x, xUnit.z);
             Vec3 zUnit = new Vec3(-xUnit.z, xUnit.y, xUnit.x);
             return new Vec3[] { xUnit, yUnit, zUnit };
+        }
+
+        private static void getDrumLocation(int index)
+        {
+            Debug.WriteLine("Touch the controller to drum " + index + " now");
+            if (Input.Hand((Handed)0).IsJustGripped)
+            {
+                Debug.WriteLine("Pinched!");
+                drumLocations[index] = Input.Hand((Handed)0).palm;
+            }
         }
     }
 
