@@ -72,7 +72,7 @@ void setup()
   Serial.begin(SERIAL_RATE);
   
   //initialize globals
-  for(short i=0; i<NUM_PIEZOS; ++i)
+  for(short i=0; i<NUM_PIEZOS; i++)
   {
     currentSignalIndex[i] = 0;
     currentPeakIndex[i] = 0;
@@ -100,7 +100,7 @@ void loop()
 {
   unsigned long currentTime = millis();
   
-  for(short i=0; i<NUM_PIEZOS; ++i)
+  for(short i=0; i<NUM_PIEZOS; i++)
   {
     //get a new signal from analog read
     unsigned short newSignal = analogRead(slotMap[i]);
@@ -197,7 +197,25 @@ void noteFire(unsigned short note, unsigned short velocity)
 */
 void sendNote(byte note)
 {
-  Serial.write(note);
+  switch (note) {
+    case 0:
+      Serial.write("0");
+      break;
+    case 1:
+      Serial.write("1");
+      break;
+    case 2:
+      Serial.write("2");
+      break;
+    case 3:
+      Serial.write("3");
+      break;
+    default:
+      Serial.write("Error: Invalid Byte");
+      break;
+  }
+  //int noteInt = note;
+  //Serial.write(noteInt);
   //Serial.print(note);
 }
 /*void midiNoteOn(byte note, byte midiVelocity)
@@ -206,7 +224,6 @@ void sendNote(byte note)
   Serial.write(note);
   Serial.write(midiVelocity);
 }
-
 void midiNoteOff(byte note, byte midiVelocity)
 {
   Serial.write(NOTE_OFF_CMD);
