@@ -123,7 +123,7 @@ namespace DrumMR
                     //draws the board
                     boardModel.Draw(boardPose.ToMatrix(), Color.Black);
 
-                    while (positionInNotes < notes.Length && notes[positionInNotes].time-(songStartTime-Time.Total) > timeLengthOfGameBoard)
+                    while (positionInNotes < notes.Length && notes[positionInNotes].time-(Time.Total-songStartTime) < timeLengthOfGameBoard)
                     {
                         Note noteToPush = notes[positionInNotes];
                         Debug.WriteLine(noteToPush.pad);
