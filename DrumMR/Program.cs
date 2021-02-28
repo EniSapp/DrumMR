@@ -158,9 +158,10 @@ namespace DrumMR
                             }
                         }
                     }
-
-
-
+                    if (positionInNotes == notes.Length)
+                    {
+                        notes = null;
+                    }
                 }
             })) ;
             SK.Shutdown();
