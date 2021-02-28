@@ -56,6 +56,7 @@ namespace DrumMR
             Mesh boardMesh = Mesh.GenerateCube(new Vec3(.30f, .20f, .1f));
             Mesh noteMesh = Mesh.GenerateCube(new Vec3(.04f, .048f, .1f));
             Model boardModel = Model.FromMesh(boardMesh, Default.Material);
+            Model noteModel = Model.FromMesh(noteMesh, Default.Material);
             Debug.WriteLine(unitVectors[0]);
 
 
@@ -124,6 +125,7 @@ namespace DrumMR
                         {
                             Note noteToRender = noteQueues[i].Dequeue();
                             Pose notePose = new Pose(notePoint * i, (float)(noteToRender.time - Time.Total) *(float)( .30/1.5) , boardLocation.z+ (float).1,boardQuat);
+                            noteModel.Draw(notePose.ToMatrix(), Color.Black);
                             //TODO: RENDER THE NOTE HERE
                             //unitVectors[3] contains vectors representing 
 

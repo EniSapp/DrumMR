@@ -80,6 +80,7 @@
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\floor.hlsl" />
     <Content Include="Assets\grd.png" />
     <Content Include="Assets\grid.png" />
     <Content Include="Assets\istanbul.ogg" />
