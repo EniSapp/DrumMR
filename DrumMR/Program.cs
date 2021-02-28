@@ -17,6 +17,10 @@ namespace DrumMR
     class Program
     {
         static Pose[] drumLocations = new Pose[3];
+        static Note[] notes;
+        static string[] songs = { "SoneOne", "SongTwo", "SongThree" };
+        //TODO: CHANGE ME INTO THE ACTUAL LIST OF SONGS
+
         static void Main(string[] args)
         {
 
@@ -46,7 +50,25 @@ namespace DrumMR
             // Core application loop
             while (SK.Step(() =>
             {
-
+                if (notes is null)
+                {
+                    Pose windowPose = new Pose(-.4f, 0, 0, Quat.LookDir(1, 0, 1));
+                    UI.WindowBegin("Window", ref windowPose, new Vec2(20, 0) * U.cm, UIWin.Normal);
+                    for (int i = 0; i < songs.Length; i++)
+                    {
+                        if (UI.Button(songs[i]))
+                        {
+                            string jsonString = getJSONStringOfSong(songs[i]);
+                            notes = parseJSONSong(jsonString);
+                            notes = sortNotes(notes);
+                            //On the next frame notes will no longer be null and the "else" clause will be entered
+                        }
+                    }
+                }
+                else
+                {
+                    //Play the game!
+                }
             })) ;
             SK.Shutdown();
         }
