@@ -39,16 +39,19 @@ namespace DrumMR
             };
             if (!SK.Initialize(settings))
                 Environment.Exit(1);
-            
-            
 
-            SerialPort port = new SerialPort("COM1", 9600, Parity.None, 8, StopBits.One);
+
+
+            SerialPort port = new SerialPort();
+            port.PortName = "COM3";
+            port.BaudRate = 9600;
+            //port.Open();
             port.DataReceived += (sender, dataArgs) =>
             {
                 SerialPort sp = (SerialPort)sender;
                 string result = sp.ReadExisting();
                 Debug.WriteLine("Serial data received: " + result);
-                buffer[Int32.Parse(result)] = true;
+                //buffer[Int32.Parse(result)] = true;
             };
 
             Vec3[] unitVectors = createNewUnitVectors(); //x, y, and z

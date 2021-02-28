@@ -51,5 +51,11 @@
 
   <Capabilities>
     <DeviceCapability Name="webcam"/>
-    <DeviceCapability Name="bluetooth"/></Capabilities>
+    <DeviceCapability Name="bluetooth"/>
+    <DeviceCapability Name="serialcommunication">
+    <Device Id="any">
+      <Function Type="name:serialPort" />
+    </Device>
+  </DeviceCapability>
+    </Capabilities>
 </Package>
