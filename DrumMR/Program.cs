@@ -19,7 +19,6 @@ namespace DrumMR
         static Pose[] drumLocations = new Pose[3];
         static void Main(string[] args)
         {
-            Debug.WriteLine("sleep");
 
             // Initialize StereoKit
             SKSettings settings = new SKSettings
@@ -29,24 +28,6 @@ namespace DrumMR
             };
             if (!SK.Initialize(settings))
                 Environment.Exit(1);
-
-            Pose windowPose = new Pose(-.4f, 0, 0, Quat.LookDir(1, 0, 1));
-
-            bool showHeader = true;
-            float slider = 0.5f;
-
-            Model clipboard = Model.FromFile("Clipboard.glb");
-            Sprite grid = Sprite.FromFile("grd.png", SpriteType.Single);
-
-            // Create assets used by the app
-            Pose cubePose = new Pose(0, 0, -0.5f, Quat.Identity);
-            Model cube = Model.FromMesh(
-                Mesh.GenerateRoundedCube(Vec3.One * 0.1f, 0.02f),
-                Default.MaterialUI);
-
-            Matrix floorTransform = Matrix.TS(new Vec3(0, -1.5f, 0), new Vec3(30, 0.1f, 30));
-            Material floorMaterial = new Material(Shader.FromFile("floor.hlsl"));
-            floorMaterial.Transparency = Transparency.Blend;
 
             var QRCodeWatcherAccess = GetAccessStatus().Result;
             if (QRCodeWatcherAccess != QRCodeWatcherAccessStatus.Allowed)
@@ -62,26 +43,10 @@ namespace DrumMR
             SetQRPoses();
             WaitFromDrumInitialization();
 
-            //Sprite grid = Sprite.FromFile("grid.png", SpriteType.Single);
-            //Matrix gridMatrix = Pose.ToMatrix(drumLocations[0].position);
             // Core application loop
             while (SK.Step(() =>
             {
-                if (SK.System.displayType == Display.Opaque)
-                    Default.MeshCube.Draw(floorMaterial, floorTransform);
-                UI.WindowBegin("Window", ref windowPose, new Vec2(20, 0) * U.cm, showHeader ? UIWin.Normal : UIWin.Body);
-                if (UI.Toggle("Exit", ref showHeader))
-                {
-                    SK.Shutdown();
-                }
-                UI.Label("Slide");
-                UI.SameLine();
-                UI.HSlider("slider", ref slider, 0, 1, 0.2f, 72 * U.mm);
-                UI.WindowEnd();
 
-
-                UI.Handle("Cube", ref cubePose, cube.Bounds);
-                cube.Draw(cubePose.ToMatrix());
             })) ;
             SK.Shutdown();
         }
@@ -169,6 +134,12 @@ namespace DrumMR
                 index++;
             }
             return toReturn;
+        }
+
+        private static Note[] sortNotes(Note[] ar)
+        {
+            Array.Sort<Note>(ar, (x, y) => x.time.CompareTo(y.time));
+            return ar;
         }
     }
 }
