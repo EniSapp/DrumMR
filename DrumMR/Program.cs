@@ -19,7 +19,7 @@ namespace DrumMR
     {
         static Pose[] drumLocations = new Pose[3];
         static Note[] notes;
-        static string[] songs = { "songname", "SongTwo", "SongThree" };
+        static string[] songs = { "Istanbul", "particle", "tmbg", "wheel", "whistling" };
         const double timeLengthOfGameBoard = 1.5;
         static bool[] buffer = new bool[4];
         //TODO: CHANGE ME INTO THE ACTUAL LIST OF SONGS
