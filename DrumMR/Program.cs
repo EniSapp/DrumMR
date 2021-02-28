@@ -19,7 +19,7 @@ namespace DrumMR
     {
         static Pose[] drumLocations = new Pose[3];
         static Note[] notes;
-        static string[] songs = { "songname", "SongTwo", "SongThree" };
+        static string[] songs = { "Istanbul", "particle", "tmbg", "wheel", "whistling" };
         const double timeLengthOfGameBoard = 1.5;
         static bool[] buffer = new bool[4];
         //TODO: CHANGE ME INTO THE ACTUAL LIST OF SONGS
@@ -72,6 +72,12 @@ namespace DrumMR
             // Core application loop
             while (SK.Step(() =>
             {
+                //test code
+                Pose gridPose = new Pose(-.4f, 0, 0, Quat.LookDir(1, 0, 1));
+                Matrix gridmat = gridPose.ToMatrix();
+                //Matrix gridmat = drumLocations[2].ToMatrix();
+                Sprite grid = Sprite.FromFile("grd.png", SpriteType.Single);
+                grid.Draw(gridmat,Color32.BlackTransparent);
                 if (notes is null)
                 {
                     //TODO: CHANGE THIS TO MOVE WITH THE USER USING INPUT.HEAD.POSITION?
