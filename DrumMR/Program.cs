@@ -20,8 +20,9 @@ namespace DrumMR
         static Pose[] drumLocations = new Pose[4];
         static Note[] notes;
         static string[] songs = { "istanbul", "particle", "tmbg", "wheel", "whistling" };
-        const double timeLengthOfGameBoard = 1.5;
         static bool[] buffer = new bool[4];
+        const float NOTE_HIT_TIME_MARGIN = 0.35f;
+        const float GAME_BOARD_TIME = 1.5f;
 
         static void Main(string[] args)
         {
@@ -123,7 +124,7 @@ namespace DrumMR
                     //draws the board
                     boardModel.Draw(boardPose.ToMatrix(), Color.Black);
 
-                    while (positionInNotes < notes.Length && notes[positionInNotes].time-(Time.Total-songStartTime) < timeLengthOfGameBoard)
+                    while (positionInNotes < notes.Length && notes[positionInNotes].time-(Time.Total-songStartTime) < GAME_BOARD_TIME)
                     {
                         Note noteToPush = notes[positionInNotes];
                         Debug.WriteLine(noteToPush.pad);
@@ -147,7 +148,7 @@ namespace DrumMR
 
 
 
-                            if (j == 0 && buffer[i])
+                            if (j == 0 && buffer[i] && noteToRender.time-songStartTime < NOTE_HIT_TIME_MARGIN)
                             {
                                 //TODO: ONLY DO THIS IF THE NOTE IS CLOSE TO THE BOTTOM
                                 buffer[i] = false;
@@ -157,9 +158,10 @@ namespace DrumMR
                             }
                         }
                     }
-
-
-
+                    if (positionInNotes == notes.Length)
+                    {
+                        notes = null;
+                    }
                 }
             })) ;
             SK.Shutdown();
