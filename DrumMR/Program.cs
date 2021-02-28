@@ -55,7 +55,7 @@ namespace DrumMR
             };
 
             Vec3[] unitVectors = createNewUnitVectors(); //x, y, and z
-            Mesh boardMesh = Mesh.GenerateCube(new Vec3(.30f, .20f, .1f));
+            Mesh boardMesh = Mesh.GenerateCube(new Vec3(1f, 2f, 0));
             Mesh noteMesh = Mesh.GenerateCube(new Vec3(.04f, .048f, 0));
             Model boardModel = Model.FromMesh(boardMesh, Default.Material);
             Model noteModel = Model.FromMesh(noteMesh, Default.Material);
@@ -63,7 +63,7 @@ namespace DrumMR
 
 
 
-            Quat boardQuat = new Quat((float).5, (float).5, (float).5, (float).5);
+            Quat boardQuat = new Quat((float)0, (float).7, (float).7, (float)0);
 
             Vec3 boardLocation = new Vec3(drumLocations[1].orientation.x + .05f*(unitVectors[0].x+unitVectors[1].x+unitVectors[2].x), drumLocations[1].orientation.y + .05f*((unitVectors[0].y + unitVectors[1].y + unitVectors[2].y)), drumLocations[1].orientation.z + (((unitVectors[0].z + unitVectors[1].z + unitVectors[2].z))));
             Pose boardPose = new Pose(boardLocation, boardQuat);
@@ -118,7 +118,7 @@ namespace DrumMR
                 {
                     //calculates x values for note lanes
                     float midpoint = (drumLocations[0].position.x + drumLocations[3].position.x)/2;
-                    float notePoint = midpoint / 4;
+                    float notePoint = midpoint / 8;
 
                     //draws the board
                     boardModel.Draw(boardPose.ToMatrix(), Color.Black);
@@ -137,7 +137,7 @@ namespace DrumMR
                         for (int j = 0; j < noteQueues[i].Count; j++)
                         {
                             Note noteToRender = noteQueues[i].Dequeue();
-                            Pose notePose = new Pose(notePoint * i, (float)(noteToRender.time - songStartTime) *(float)( .20/1.5) , boardLocation.z+ (float).1,boardQuat);
+                            Pose notePose = new Pose(notePoint * i, (float)(noteToRender.time - songStartTime) *(float)( 2/1.5) , boardLocation.z+ (float).1,boardQuat);
                             Debug.WriteLine("note " + i);
                             noteModel.Draw(notePose.ToMatrix(), Color.White);
                             //TODO: RENDER THE NOTE HERE
