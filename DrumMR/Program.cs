@@ -18,7 +18,7 @@ namespace DrumMR
     {
         static Pose[] drumLocations = new Pose[3];
         static Note[] notes;
-        static string[] songs = { "SoneOne", "SongTwo", "SongThree" };
+        static string[] songs = { "songname", "SongTwo", "SongThree" };
         const double timeLengthOfGameBoard = 1.5;
         //TODO: CHANGE ME INTO THE ACTUAL LIST OF SONGS
 
@@ -52,6 +52,9 @@ namespace DrumMR
             SetQRPoses();
             WaitFromDrumInitialization();
 
+            Matrix gridmat = drumLocations[0].ToMatrix();
+            Sprite grid = Sprite.FromFile("grd.png");
+            grid.Draw(gridmat,Color32.Black);
             // Core application loop
             while (SK.Step(() =>
             {
@@ -73,6 +76,7 @@ namespace DrumMR
                             noteQueues = new Queue<Note>[3];
                         }
                     }
+                    UI.WindowEnd();
                 }
                 else
                 {
@@ -145,7 +149,7 @@ namespace DrumMR
                 {
                     if (!PoseIsInitialized(drumLocations[i]))
                     {
-                        allDrumsFound = false;
+                       allDrumsFound = false;
                     }
                 }
                 Thread.Sleep(500);
