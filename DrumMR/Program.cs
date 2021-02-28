@@ -63,7 +63,7 @@ namespace DrumMR
 
 
 
-            Quat boardQuat = new Quat(0, 0, 0, 0);
+            Quat boardQuat = new Quat((float).5, (float).5, (float).5, (float).5);
 
             Vec3 boardLocation = new Vec3(drumLocations[1].orientation.x + .05f*(unitVectors[0].x+unitVectors[1].x+unitVectors[2].x), drumLocations[1].orientation.y + .05f*((unitVectors[0].y + unitVectors[1].y + unitVectors[2].y)), drumLocations[1].orientation.z + (((unitVectors[0].z + unitVectors[1].z + unitVectors[2].z))));
             Pose boardPose = new Pose(boardLocation, boardQuat);
