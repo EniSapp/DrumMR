@@ -81,8 +81,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\floor.hlsl" />
-    <Content Include="Assets\grd.png" />
-    <Content Include="Assets\grid.png" />
     <Content Include="Assets\istanbul.wav" />
     <Content Include="Assets\Logo\Logo-150.png" />
     <Content Include="Assets\Logo\Logo-16.png" />
@@ -117,7 +115,6 @@
   <ItemGroup>
     <None Include="Assets\istanbul.json" />
     <None Include="Assets\particle.json" />
-    <None Include="Assets\songname.json" />
     <None Include="Assets\tmbg.json" />
     <None Include="Assets\wheel.json" />
     <None Include="Assets\whistling.json" />
