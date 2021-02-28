@@ -51,13 +51,17 @@ namespace DrumMR
             //Directly modifies drumLocations[i] with the location of the i'th drum.
             SetQRPoses();
             WaitFromDrumInitialization();
+            
 
-            Matrix gridmat = drumLocations[0].ToMatrix();
-            Sprite grid = Sprite.FromFile("grd.png");
-            grid.Draw(gridmat,Color32.Black);
             // Core application loop
             while (SK.Step(() =>
             {
+                //test code
+                Pose gridPose = new Pose(-.4f, 0, 0, Quat.LookDir(1, 0, 1));
+                Matrix gridmat = gridPose.ToMatrix();
+                //Matrix gridmat = drumLocations[2].ToMatrix();
+                Sprite grid = Sprite.FromFile("grd.png", SpriteType.Single);
+                grid.Draw(gridmat,Color32.BlackTransparent);
                 if (notes is null)
                 {
                     //TODO: CHANGE THIS TO MOVE WITH THE USER USING INPUT.HEAD.POSITION?
